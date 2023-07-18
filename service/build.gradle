@@ -1,0 +1,71 @@
+import org.gradle.api.internal.plugins.UnixStartScriptGenerator
+import org.gradle.api.internal.plugins.WindowsStartScriptGenerator
+
+buildscript {apply from: "${rootDir}/repos.gradle", to: buildscript}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'sigma.gradle.props'
+apply plugin: 'sigma.gradle.copydeps'
+//apply plugin: 'sigma.gradle.jaxrs-analyzer'
+
+
+group = 'nonsense'
+version = '1.0.0'
+
+dependencies {
+	implementation "sigma:data:16.0.0"
+	implementation "sigma:vertxdeploy:16.0.4"
+	implementation "sigma:vertxrest:16.0.4"
+
+	implementation 'com.j256.ormlite:ormlite-core:5.1'
+    implementation 'com.j256.ormlite:ormlite-jdbc:5.1'
+
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+
+    // This dependency is used by the application.
+    implementation 'com.google.guava:guava:28.1-jre'
+
+    // Use JUnit Jupiter API for testing.
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
+
+    // Use JUnit Jupiter Engine for testing.
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+
+    runtime "sigma:main:16.0.0"
+    runtime "org.postgresql:postgresql:42.2.11"
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'sigma.main.Main'
+}
+
+task copyWebResources {
+    doLast {
+        copy {
+            into 'build/resources/main/webroot'
+            from '../ui/build'
+        }
+    }
+}
+
+test {
+    // Use junit platform for unit tests
+    useJUnitPlatform()
+}
+
+afterEvaluate {
+    processResources.dependsOn copyWebResources
+}
+
+/*
+jaxRsAnalyzer {
+    backends 'swagger', 'asciidoc', 'plaintext', 'markdown', 'html'
+    domain 'investigator-mediator.marathon.d:8899'
+    schemes 'http'
+    security 'jwt'
+    renderTags true
+    tagPathOffset 0
+}*/
+

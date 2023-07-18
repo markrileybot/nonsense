@@ -1,0 +1,25 @@
+repositories {
+	mavenLocal()
+	def user = System.getProperty('sigma.nexusUser', System.getenv('SIGMA_NEXUS_USER'))
+	def pass = System.getProperty('sigma.nexusPassword', System.getenv('SIGMA_NEXUS_PASSWORD'))
+	def nexusUrl = System.getProperty('sigma.nexusUrl', System.getenv('SIGMA_NEXUS_URL'))
+	if (user == null || pass == null || nexusUrl == null) {
+		throw new GradleException('Required system properties not found!  The following MUST be set:\n' +
+			'systemProp.sigma.nexusUser=<NEXUS USER>\n' +
+			'systemProp.sigma.nexusPassword=<NEXUS PASSWORD>\n' +
+			'systemProp.sigma.nexusUrl=https://nexus3.dtect.net/content/groups/public/\n' +
+			"in ${System.getProperty('user.home')}/.gradle/gradle.properties!")
+	}
+	maven {
+		url nexusUrl
+		credentials {
+			username user
+			password pass
+		}
+	}
+	jcenter()
+}
+dependencies {
+	classpath 'sigma:gradle-plugins:3.20.0'
+}
+
